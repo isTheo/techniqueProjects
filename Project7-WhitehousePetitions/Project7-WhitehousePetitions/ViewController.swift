@@ -21,27 +21,21 @@ class ViewController: UITableViewController {
         let filterSymbol = UIImage(systemName: "line.horizontal.3.decrease.circle")
         let filterButton = UIBarButtonItem(image: filterSymbol, style: .plain, target: self, action: #selector(filterButtonTapped))
         
-        
-        //set navigation buttons
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Info", style: .plain, target: self, action: #selector(showCredits))
         navigationItem.leftBarButtonItem = filterButton
         
         
         let urlString: String
         
-        //la prima istanza (tag 0) del VieController caricherà il JSON originale
         if navigationController?.tabBarItem.tag == 0 {
-            //urlString = "https://api.whitehouse.gov/v1/petitions.json?limit=100"
             urlString = "https://www.hackingwithswift.com/samples/petitions-1.json"
-            //mentre questa caricherà la seconda (tag 1), e cioè le petizioni che hanno almeno 10.000 firme
         } else {
-            //urlString = "https://api.whitehouse.gov/v1/petitions.json?signatureCountFloor=10000&limit=100"
             urlString = "https://www.hackingwithswift.com/samples/petitions-2.json"
         }
         
         //using if let to make sure the URL is valid, rather than force unwrapping it
         if let url = URL(string: urlString) {
-            //Create a new Data object using its contentsOf method. This return the content from a URL, bit it might throw an error (i.e., if the internet connection was down) so we need to use try?
+            //Create a new Data object using its contentsOf method. This return the content from a URL, bit it might throw an error so we need to use try?
             if let data = try? Data(contentsOf: url) {
                 parse(json: data)
                 return
@@ -50,7 +44,7 @@ class ViewController: UITableViewController {
         
         showError()
         
-    } //viewDidLoad
+    }
     
     
     
@@ -73,8 +67,6 @@ class ViewController: UITableViewController {
     
     
     
-    
-    //setting the table view
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return petitions.count
     }
@@ -93,7 +85,6 @@ class ViewController: UITableViewController {
     
     
     
-    //setting the right bar button
     @objc func showCredits() {
         let creditsAlert = UIAlertController(title: "We The People API Information", message: "The data displayed in this app is sourced from the We The People API of the White House.", preferredStyle: .alert)
         creditsAlert.addAction(UIAlertAction(title: "Ok", style: .default))
@@ -102,14 +93,6 @@ class ViewController: UITableViewController {
     
     
     @objc func filterButtonTapped() {
-        /* original code
-        let filterAlert = UIAlertController(title: "Enter", message: nil, preferredStyle: .alert)
-        let submit = UIAlertAction(title: "Submit", style: .default)
-        filterAlert.addTextField()
-        filterAlert.addAction(submit)
-        present(filterAlert, animated: true)
-        end of original code */
-        
         let filterAlert = UIAlertController(title: "Find your petition", message: nil, preferredStyle: .alert)
         filterAlert.addTextField()
         let findAction = UIAlertAction(title: "Find", style: .default) { _ in
