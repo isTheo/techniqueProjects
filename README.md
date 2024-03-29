@@ -1,5 +1,4 @@
 # techniqueProjects
-Projects from Hacking with Swift focused on technique.
 
 
 ## Project 6b - AutoLayout
