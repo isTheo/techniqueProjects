@@ -3,7 +3,7 @@
 //  Project7-WhitehousePetitions
 //
 //  Created by Matteo Orru on 23/02/24.
-//
+//  This is Project 9 - Implementing GCD
 
 import UIKit
 
@@ -23,13 +23,7 @@ class ViewController: UITableViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Info", style: .plain, target: self, action: #selector(showCredits))
         navigationItem.leftBarButtonItem = filterButton
         
-        performSelector(inBackground: #selector(fetchJSON), with: nil)
         
-    }
-    
-    
-    
-    @objc func fetchJSON() {
         let urlString: String
         
         if navigationController?.tabBarItem.tag == 0 {
@@ -38,38 +32,39 @@ class ViewController: UITableViewController {
             urlString = "https://www.hackingwithswift.com/samples/petitions-2.json"
         }
         
-        
-        //using if let to make sure the URL is valid, rather than force unwrapping it
-        if let url = URL(string: urlString) {
-            //Create a new Data object using its contentsOf method. This return the content from a URL, bit it might throw an error (i.e., if the internet connection was down) so we need to use try?
-            if let data = try? Data(contentsOf: url) {
-                parse(json: data)
-                return
+        DispatchQueue.global(qos: .userInitiated).async {
+            if let url = URL(string: urlString) {
+                if let data = try? Data(contentsOf: url) {
+                    self.parse(json: data)
+                    return
+                }
             }
-        }
-        
-        performSelector(onMainThread: #selector(showError), with: nil, waitUntilDone: false)
+            self.showError()
+        }  
     }
+
+
     
-    
-    
-    @objc func showError() {
+    func showError() {
         let errorAlert = UIAlertController(title: "Loading error", message: "There was a problem loading the feed; please check your connection and try again.", preferredStyle: .alert)
         errorAlert.addAction(UIAlertAction(title: "Ok", style: .default))
         present(errorAlert, animated: true)
     }
-    
+
     
     func parse(json: Data) {
         let decoder = JSONDecoder()
         
-        if let jsonPetitions = try?
-            decoder.decode(Petitions.self, from: json) {
+        if let jsonPetitions = try? decoder.decode(Petitions.self, from: json) {
             petitions = jsonPetitions.results
-            tableView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: false)
             savedPetitions = petitions
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
         } else {
-            performSelector(onMainThread: #selector(showError), with: nil, waitUntilDone: false)
+            DispatchQueue.main.async {
+                self.showError()
+            }
         }
     }
     
@@ -92,14 +87,12 @@ class ViewController: UITableViewController {
     }
     
     
-    
     //setting right bar button
     @objc func showCredits() {
         let creditsAlert = UIAlertController(title: "We The People API Information", message: "The data displayed in this app is sourced from the We The People API of the White House.", preferredStyle: .alert)
         creditsAlert.addAction(UIAlertAction(title: "Ok", style: .default))
         present(creditsAlert, animated: true)
     }
-    
     
     
     @objc func filterButtonTapped() {
